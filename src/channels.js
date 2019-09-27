@@ -6,27 +6,32 @@ const qs = require('qs');
 const apiUrl = process.env.SLACK_API_URL;
 const slackAuthToken = process.env.SLACK_ACCESS_TOKEN;
 
-const findAuthedChannels = async(id, cursor) => {
-  const bot = id;
-  
-  const args = {
-    token: slackAuthToken,
-    exclude_archived: true,
-    user: bot
-  };
+const findAuthedChannels = async (id, cursor) => {
+    const bot = id;
 
-  if (cursor) args.cursor = cursor;
+    const args = {
+        token: slackAuthToken,
+        exclude_archived: true,
+        user: bot
+    };
 
-  const result = await axios.post(`${apiUrl}/users.conversations`, qs.stringify(args));
+    if (cursor) args.cursor = cursor;
 
-  const { channels, response_metadata } = result.data;
+    const result = await axios.post(`${apiUrl}/users.conversations`, qs.stringify(args));
 
-  if (response_metadata.next_cursor !== '') { 
-    return channels.concat(await findAuthedChannels(id, response_metadata.next_cursor));
-  } else {
-    return channels;
-  }
-  
+    const {
+        channels,
+        response_metadata
+    } = result.data;
+
+    if (response_metadata.next_cursor !== '') {
+        return channels.concat(await findAuthedChannels(id, response_metadata.next_cursor));
+    } else {
+        return channels;
+    }
+
 };
 
-module.exports = { findAuthedChannels };
+module.exports = {
+    findAuthedChannels
+};
