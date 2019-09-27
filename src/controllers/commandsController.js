@@ -1,4 +1,4 @@
-const message = require('./postMessage');
+const message = require('./messageController');
 const signature = require('./verifySignature');
 
 let handleEvents = function(req, res) {
@@ -16,10 +16,7 @@ let handleEvents = function(req, res) {
             res.sendStatus(404);
             return;
         } else {
-            console.log(req.body);
-            const {
-                user_id
-            } = req.body;
+            const { user_id } = req.body;
             message.postInMessage(user_id);
         }
         res.sendStatus(200);
@@ -30,9 +27,7 @@ let handleEvents = function(req, res) {
             return;
         } else {
             console.log(req.body);
-            const {
-                user_id
-            } = req.body;
+            const { user_id } = req.body;
             message.postOutMessage(user_id);
         }
         res.sendStatus(200);

@@ -1,5 +1,5 @@
-const message = require('./postMessage');
-const signature = require('./verifySignature');
+const message = require('./messageController');
+const signature = require('../verifySignature');
 const axios = require('axios');
 const qs = require('querystring');
 const apiUrl = 'https://slack.com/api';
@@ -7,7 +7,6 @@ const apiUrl = 'https://slack.com/api';
 
 // open the dialog by calling dialogs.open method and sending the payload
 const openDialog = async(trigger_id) => {
-
   const dialogData = {
     token: process.env.SLACK_ACCESS_TOKEN,
     trigger_id: trigger_id,
@@ -15,7 +14,7 @@ const openDialog = async(trigger_id) => {
       title: 'Create a Team',
       callback_id: 'setup_team',
       submit_label: 'Request',
-      text: 'Its time to nominate the channel of the week',
+      text: ' ',
       
       elements: [
         {
@@ -39,8 +38,6 @@ const openDialog = async(trigger_id) => {
       ]
     })
   };
-
-  // open the dialog by calling dialogs.open method and sending the payload
   return axios.post(`${apiUrl}/dialog.open`, qs.stringify(dialogData));
 };
 let handleInteractions = async function(req, res) {
@@ -49,14 +46,8 @@ let handleInteractions = async function(req, res) {
     return;
   } else {
     const { type, user, trigger_id, callback_id, actions, response_url, submission } = JSON.parse(req.body.payload);
-
-    /* Button press event 
-     * Check `callback_id` / `value` when handling multiple buttons in an app
-     */
-
+    
     if(type === 'interactive_message') { 
-
-      // Initial button interaction - Start creatng an announcement
       if(callback_id === 'registerTeam') {
         try {
           const result = await openDialog(trigger_id);
@@ -65,6 +56,8 @@ let handleInteractions = async function(req, res) {
           } else {
             message.sendShortMessage(user.id, 'Thanks!');
             res.sendStatus(200);
+            //#TODO
+            //POST TO SERVER that they are in
           }
         } catch(err) {
           res.sendStatus(500);
@@ -82,23 +75,7 @@ let handleInteractions = async function(req, res) {
         //#TODO
         //POST TO SERVER that they are in
       } 
-
-      // Admin approved. Post the announcement.
-      
     } 
-    
-    /* Dialog submission event */
-    
-    else if(type === 'dialog_submission') {
-      // immediately respond with a empty 200 response to let Slack know the command was received
-      res.send('');
-
-      // Store it temporary until the announcement is posted
-      console.log(submission);
-      //#TODO
-      //post_registration(submission);
-      // message.requestApproval(user.id, submission);
-    }
   } 
 }
 module.exports.run = function(req, res) {
