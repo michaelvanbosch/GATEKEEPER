@@ -8,7 +8,7 @@ const qs = require('querystring');
 const message = require('./postMessage');
 const signature = require('./verifySignature');
 const channels = require('./channels');
-
+const commandsController = require('./commandsController');
 const app = express();
 
 const apiUrl = 'https://slack.com/api';
@@ -43,42 +43,7 @@ app.get('/', (req, res) => {
 
 app.post('/events', (req, res) => {
   // console.log(req.body);
-  if (req.body.command === '/register') {
-    if (!signature.isVerified(req)) {
-        res.sendStatus(404);
-        return;
-    }
-    else {
-      console.log(req.body);
-      const { user_id } = req.body;
-      message.postRegistrationMessage(user_id);
-    }
-    res.sendStatus(200);
-  }
-  else if (req.body.command === '/in') {
-    if (!signature.isVerified(req)) {
-        res.sendStatus(404);
-        return;
-    }
-    else {
-      console.log(req.body);
-      const { user_id } = req.body;
-      message.postInMessage(user_id);
-    }
-    res.sendStatus(200);
-  }
-  if (req.body.command === '/out') {
-    if (!signature.isVerified(req)) {
-        res.sendStatus(404);
-        return;
-    }
-    else {
-      console.log(req.body);
-      const { user_id } = req.body;
-      message.postOutMessage(user_id);
-    }
-    res.sendStatus(200);
-  }
+  commandsController.run(req,res);
 });
   
 /*
@@ -106,7 +71,8 @@ app.post('/interactions', async(req, res) => {
           if(result.data.error) {
             res.sendStatus(500);
           } else {
-            res.sendStatus('');
+            message.sendShortMessage(user.id, 'Thanks!');
+            res.sendStatus(200);
           }
         } catch(err) {
           res.sendStatus(500);
