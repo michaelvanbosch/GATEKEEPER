@@ -11,7 +11,7 @@ const routes = require('./routes');
 
 const app = express();
 
-const apiUrl = 'https://slack.com/api';
+const apiUrl = process.env.SLACK_API_URL;
 const announcements = {};
 
 const rawBodyBuffer = (req, res, buf, encoding) => {

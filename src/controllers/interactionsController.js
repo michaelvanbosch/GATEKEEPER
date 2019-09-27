@@ -2,8 +2,7 @@ const message = require('./messageController');
 const signature = require('../verifySignature');
 const axios = require('axios');
 const qs = require('querystring');
-const apiUrl = 'https://slack.com/api';
-
+const apiUrl = process.env.SLACK_API_URL;
 
 // open the dialog by calling dialogs.open method and sending the payload
 const openDialog = async(trigger_id) => {

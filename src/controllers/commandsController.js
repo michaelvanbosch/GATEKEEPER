@@ -1,5 +1,5 @@
 const message = require('./messageController');
-const signature = require('./verifySignature');
+const signature = require('../verifySignature');
 
 let handleEvents = function(req, res) {
     if (req.body.command === '/register') {

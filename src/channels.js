@@ -3,7 +3,7 @@
 const axios = require('axios');
 const qs = require('qs');
 
-const apiUrl = 'https://slack.com/api';
+const apiUrl = process.env.SLACK_API_URL;
 const slackAuthToken = process.env.SLACK_ACCESS_TOKEN;
 
 const findAuthedChannels = async(id, cursor) => {
