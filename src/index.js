@@ -42,33 +42,18 @@ app.get('/', (req, res) => {
  */
 
 app.post('/events', (req, res) => {
-  switch (req.body.type) {
-    case 'url_verification': {
-      // verify Events API endpoint by returning challenge if present
-      res.send({ challenge: req.body.challenge });
-      break;
-    }
-    case 'event_callback': {
-      // Verify the signing secret
-      if (!signature.isVerified(req)) {
+  // console.log(req.body);
+  if (req.body.command === '/register') {
+    if (!signature.isVerified(req)) {
         res.sendStatus(404);
         return;
-      } else {
-        const { user, bot_id } = req.body.event;
-
-        if (bot_id) { 
-          bot = user;
-          console.log(`Bot User ID: ${bot}`);
-          return;
-        } else {
-          // DM the user a confirmation message
-          message.postInitMessage(user);
-        }
-        res.sendStatus(200);
-      }
-      break;
     }
-    default: { res.sendStatus(404); }
+    else {
+      console.log(req.body);
+      const { user_id } = req.body;
+      message.postInitMessage(user_id);
+    }
+    res.sendStatus(200);
   }
 });
   
@@ -91,7 +76,7 @@ app.post('/interactions', async(req, res) => {
     if(type === 'interactive_message') { 
 
       // Initial button interaction - Start creatng an announcement
-      if(callback_id === 'makeAnnouncement') {
+      if(callback_id === 'registerTeam') {
         try {
           const result = await openDialog(trigger_id);
           if(result.data.error) {
@@ -165,31 +150,29 @@ const openDialog = async(trigger_id) => {
     token: process.env.SLACK_ACCESS_TOKEN,
     trigger_id: trigger_id,
     dialog: JSON.stringify({
-      title: 'Request an announcement',
-      callback_id: 'request_announcement',
+      title: 'Create a Team',
+      callback_id: 'setup_team',
       submit_label: 'Request',
+      text: 'Its time to nominate the channel of the week',
+      
       elements: [
         {
           type: 'text',
           name: 'title',
-          label: 'Title'
+          label: 'Team Name',
         },
-        {
-          type: 'textarea',
-          name: 'details',
-          label: 'Details'
-        },
+        
         {
           type: 'select',
-          name: 'approver',
-          label: 'Select an approver',
-          data_source: 'users'
+          name: 'team',
+          label: 'Your team\'s slack channel',
+          data_source: 'channels',
         },
         {
-          type: 'select', 
-          name: 'channel',
-          label: 'Where to be posted?',
-          data_source: 'external'
+          type: 'text', 
+          name: 'time',
+          label: 'Working Hours?',
+          placeholder: '7:30-4:00'
         }
       ]
     })

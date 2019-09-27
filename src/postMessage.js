@@ -13,17 +13,16 @@ const postInitMessage = (userId) => {
   let messageData = {
     token: process.env.SLACK_ACCESS_TOKEN,
     channel: userId,
-    text: ':wave: Hello! I\'m here to help your team make approved announcements into a channel.',
     attachments: JSON.stringify([
       {
-        text: 'Do you have something to announce?',
-        callback_id: 'makeAnnouncement',
+        text: 'Register your team',
+        callback_id: 'registerTeam',
         actions: [
           {
             name: 'start',
-            text: 'Make announcement',
+            text: 'Register your team',
             type: 'button',
-            value: 'makeAnnouncement',
+            value: 'register',
           }
         ]
       }
