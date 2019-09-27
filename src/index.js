@@ -51,7 +51,31 @@ app.post('/events', (req, res) => {
     else {
       console.log(req.body);
       const { user_id } = req.body;
-      message.postInitMessage(user_id);
+      message.postRegistrationMessage(user_id);
+    }
+    res.sendStatus(200);
+  }
+  else if (req.body.command === '/in') {
+    if (!signature.isVerified(req)) {
+        res.sendStatus(404);
+        return;
+    }
+    else {
+      console.log(req.body);
+      const { user_id } = req.body;
+      message.postInMessage(user_id);
+    }
+    res.sendStatus(200);
+  }
+  if (req.body.command === '/out') {
+    if (!signature.isVerified(req)) {
+        res.sendStatus(404);
+        return;
+    }
+    else {
+      console.log(req.body);
+      const { user_id } = req.body;
+      message.postOutMessage(user_id);
     }
     res.sendStatus(200);
   }
@@ -87,6 +111,18 @@ app.post('/interactions', async(req, res) => {
         } catch(err) {
           res.sendStatus(500);
         }
+      }
+      else if(callback_id === 'setStatusAsIn') {
+        message.sendShortMessage(user.id, 'Thanks! Don\'t forget to sign out when you leave');
+        res.sendStatus(200);
+        //#TODO
+        //POST TO SERVER that they are in
+      }
+      else if(callback_id === 'setStatusAsOut') {
+        message.sendShortMessage(user.id, 'Thanks! Have a great rest of your day.');
+        res.sendStatus(200);
+        //#TODO
+        //POST TO SERVER that they are in
       } 
 
       // Admin approved. Post the announcement.
@@ -113,7 +149,10 @@ app.post('/interactions', async(req, res) => {
 
       // Store it temporary until the announcement is posted
       announcements[user.id] = submission;
-      message.requestApproval(user.id, submission);
+      console.log(submission);
+      //#TODO
+      //post_registration(submission);
+      // message.requestApproval(user.id, submission);
     }
   } 
 });

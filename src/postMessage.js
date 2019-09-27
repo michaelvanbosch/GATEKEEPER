@@ -9,7 +9,7 @@ const apiUrl = 'https://slack.com/api';
  *  Post message via chat.postMessage 
  */
 
-const postInitMessage = (userId) => {
+const postRegistrationMessage = (userId) => {
   let messageData = {
     token: process.env.SLACK_ACCESS_TOKEN,
     channel: userId,
@@ -21,6 +21,50 @@ const postInitMessage = (userId) => {
           {
             name: 'start',
             text: 'Register your team',
+            type: 'button',
+            value: 'register',
+          }
+        ]
+      }
+    ])
+  };
+  send(messageData);
+};
+
+const postInMessage = (userId) => {
+  let messageData = {
+    token: process.env.SLACK_ACCESS_TOKEN,
+    channel: userId,
+    attachments: JSON.stringify([
+      {
+        text: 'Click below if you are in the office.',
+        callback_id: 'setStatusAsIn',
+        actions: [
+          {
+            name: 'start',
+            text: 'Set Status as \'IN\'',
+            type: 'button',
+            value: 'Submit',
+          }
+        ]
+      }
+    ])
+  };
+  send(messageData);
+};
+
+const postOutMessage = (userId) => {
+  let messageData = {
+    token: process.env.SLACK_ACCESS_TOKEN,
+    channel: userId,
+    attachments: JSON.stringify([
+      {
+        text: 'Click below when you are leaving the office',
+        callback_id: 'setStatusAsOut',
+        actions: [
+          {
+            name: 'start',
+            text: 'Set Status as \'OUT\'',
             type: 'button',
             value: 'register',
           }
@@ -124,4 +168,4 @@ const send = async(data) => {
   }
 };
 
-module.exports = { postInitMessage, requestApproval, postAnnouncement, sendShortMessage };
+module.exports = { postRegistrationMessage, postInMessage, postOutMessage, requestApproval, postAnnouncement, sendShortMessage };
